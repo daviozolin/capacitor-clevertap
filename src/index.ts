@@ -2,9 +2,7 @@ import { registerPlugin } from '@capacitor/core';
 
 import type { CleverTapPlugin } from './definitions';
 
-const CleverTap = registerPlugin<CleverTapPlugin>('CleverTap', {
-  web: () => import('./web').then(m => new m.CleverTapWeb()),
-});
+const CleverTapAnalytics = registerPlugin<CleverTapPlugin>('CleverTapAnalytics');
 
 export * from './definitions';
-export { CleverTap };
+export { CleverTapAnalytics };

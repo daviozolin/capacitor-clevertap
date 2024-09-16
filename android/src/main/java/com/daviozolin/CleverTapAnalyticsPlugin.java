@@ -6,10 +6,10 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-@CapacitorPlugin(name = "CleverTap")
-public class CleverTapPlugin extends Plugin {
+@CapacitorPlugin(name = "CleverTapAnalytics")
+public class CleverTapAnalyticsPlugin extends Plugin {
 
-    private CleverTap implementation = new CleverTap();
+    private CleverTapAnalytics implementation = new CleverTapAnalytics();
 
     @PluginMethod
     public void echo(PluginCall call) {
@@ -19,4 +19,6 @@ public class CleverTapPlugin extends Plugin {
         ret.put("value", implementation.echo(value));
         call.resolve(ret);
     }
+
+
 }
