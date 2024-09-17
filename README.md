@@ -14,12 +14,13 @@ npx cap sync
 <docgen-index>
 
 * [`getProfileID()`](#getprofileid)
-* [`recordEventWithNameAndProps(...)`](#recordeventwithnameandprops)
-* [`recordChargedEventWithDetailsAndItems(...)`](#recordchargedeventwithdetailsanditems)
-* [`profileIncrementValueBy(...)`](#profileincrementvalueby)
-* [`profileSet(...)`](#profileset)
+* [`recordEvent(...)`](#recordevent)
+* [`recordChargedEvent(...)`](#recordchargedevent)
+* [`profileIncrementValue(...)`](#profileincrementvalue)
+* [`profilePush(...)`](#profilepush)
 * [`setLocation(...)`](#setlocation)
-* [`setPushToken(...)`](#setpushtoken)
+* [`setPushTokenAs(...)`](#setpushtokenas)
+* [`onUserLogin(...)`](#onuserlogin)
 
 </docgen-index>
 
@@ -37,10 +38,10 @@ getProfileID() => Promise<{ id: string; }>
 --------------------
 
 
-### recordEventWithNameAndProps(...)
+### recordEvent(...)
 
 ```typescript
-recordEventWithNameAndProps(props: { event: string; properties: any; }) => Promise<void>
+recordEvent(props: { event: string; properties: any; }) => Promise<void>
 ```
 
 | Param       | Type                                             |
@@ -50,10 +51,10 @@ recordEventWithNameAndProps(props: { event: string; properties: any; }) => Promi
 --------------------
 
 
-### recordChargedEventWithDetailsAndItems(...)
+### recordChargedEvent(...)
 
 ```typescript
-recordChargedEventWithDetailsAndItems(props: { details: any; items: [any]; }) => Promise<void>
+recordChargedEvent(props: { details: any; items: [any]; }) => Promise<void>
 ```
 
 | Param       | Type                                         |
@@ -63,10 +64,10 @@ recordChargedEventWithDetailsAndItems(props: { details: any; items: [any]; }) =>
 --------------------
 
 
-### profileIncrementValueBy(...)
+### profileIncrementValue(...)
 
 ```typescript
-profileIncrementValueBy(props: { key: string; value: number; }) => Promise<void>
+profileIncrementValue(props: { key: string; value: number; }) => Promise<void>
 ```
 
 | Param       | Type                                         |
@@ -76,10 +77,10 @@ profileIncrementValueBy(props: { key: string; value: number; }) => Promise<void>
 --------------------
 
 
-### profileSet(...)
+### profilePush(...)
 
 ```typescript
-profileSet(props: { profileProperties: any; }) => Promise<void>
+profilePush(props: { profileProperties: any; }) => Promise<void>
 ```
 
 | Param       | Type                                     |
@@ -102,15 +103,28 @@ setLocation(props: { lat: number; lng: number; }) => Promise<void>
 --------------------
 
 
-### setPushToken(...)
+### setPushTokenAs(...)
 
 ```typescript
-setPushToken(props: { token: string; }) => Promise<void>
+setPushTokenAs(props: { token: string; }) => Promise<void>
 ```
 
 | Param       | Type                            |
 | ----------- | ------------------------------- |
 | **`props`** | <code>{ token: string; }</code> |
+
+--------------------
+
+
+### onUserLogin(...)
+
+```typescript
+onUserLogin(props: { profileProperties: any; }) => Promise<void>
+```
+
+| Param       | Type                                     |
+| ----------- | ---------------------------------------- |
+| **`props`** | <code>{ profileProperties: any; }</code> |
 
 --------------------
 

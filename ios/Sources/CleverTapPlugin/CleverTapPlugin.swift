@@ -7,28 +7,30 @@ public class CleverTapPlugin: CAPPlugin, CAPBridgedPlugin {
   public let identifier = "CleverTapPlugin"
   public let jsName = "CleverTapAnalytics"
   public let pluginMethods: [CAPPluginMethod] = [
-    CAPPluginMethod(name: "getProfileID", returnType: CAPPluginReturnPromise),
-    CAPPluginMethod(name: "recordEventWithNameAndProps", returnType: CAPPluginReturnPromise),
+    CAPPluginMethod(name: "profileGetID", returnType: CAPPluginReturnPromise),
+    CAPPluginMethod(name: "recordEvent", returnType: CAPPluginReturnPromise),
     CAPPluginMethod(
-      name: "recordChargedEventWithDetailsAndItems", returnType: CAPPluginReturnPromise),
+      name: "recordChargedEvent", returnType: CAPPluginReturnPromise),
     CAPPluginMethod(
-      name: "profileIncrementValueBy", returnType: CAPPluginReturnPromise),
+      name: "profileIncrementValue", returnType: CAPPluginReturnPromise),
     CAPPluginMethod(
-      name: "profileSet", returnType: CAPPluginReturnPromise),
+      name: "profilePush", returnType: CAPPluginReturnPromise),
+    CAPPluginMethod(
+      name: "onUserLogin", returnType: CAPPluginReturnPromise),
     CAPPluginMethod(
       name: "setLocation", returnType: CAPPluginReturnPromise),
     CAPPluginMethod(
-      name: "setPushToken", returnType: CAPPluginReturnPromise),
+      name: "setPushTokenAs", returnType: CAPPluginReturnPromise),
   ]
   private let implementation = CleverTapAnalytics()
 
-  @objc func getProfileID(_ call: CAPPluginCall) {
+  @objc func profileGetID(_ call: CAPPluginCall) {
     call.resolve([
-      "id": implementation.getProfileID()
+      "id": implementation.profileGetID()
     ])
   }
 
-  @objc func recordEventWithNameAndProps(_ call: CAPPluginCall) {
+  @objc func recordEvent(_ call: CAPPluginCall) {
     guard let event = call.getString("event") else {
       call.reject("Event name missing or malformatted")
       return
@@ -39,11 +41,11 @@ public class CleverTapPlugin: CAPPlugin, CAPBridgedPlugin {
       return
     }
 
-    implementation.recordEventWithNameAndProps(event: event, properties: props)
+    implementation.recordEvent(event: event, properties: props)
     call.resolve()
   }
 
-  @objc func recordChargedEventWithDetailsAndItems(_ call: CAPPluginCall) {
+  @objc func recordChargedEvent(_ call: CAPPluginCall) {
 
     guard let details = call.getObject("details") else {
       call.reject("Purchese details missing or malformatted")
@@ -55,11 +57,11 @@ public class CleverTapPlugin: CAPPlugin, CAPBridgedPlugin {
       return
     }
 
-    implementation.recordChargedEventWithDetailsAndItems(details: details, items: items)
+    implementation.recordChargedEvent(details: details, items: items)
     call.resolve()
   }
 
-  @objc func profileIncrementValueBy(_ call: CAPPluginCall) {
+  @objc func profileIncrementValue(_ call: CAPPluginCall) {
     guard let key = call.getString("key") else {
       call.reject("Key missing or malformatted")
       return
@@ -70,18 +72,29 @@ public class CleverTapPlugin: CAPPlugin, CAPBridgedPlugin {
       return
     }
 
-    implementation.profileIncrementValueBy(forKey: key, by: NSNumber(value: value))
+    implementation.profileIncrementValue(forKey: key, by: NSNumber(value: value))
     call.resolve()
   }
 
-  @objc func profileSet(_ call: CAPPluginCall) {
+  @objc func profilePush(_ call: CAPPluginCall) {
 
     guard let properties = call.getObject("profileProperties") else {
       call.reject("Profile properties details missing or malformatted")
       return
     }
 
-    implementation.profileSet(properties: properties)
+    implementation.profilePush(properties: properties)
+    call.resolve()
+  }
+
+  @objc func onUserLogin(_ call: CAPPluginCall) {
+
+    guard let properties = call.getObject("profileProperties") else {
+      call.reject("Profile properties details missing or malformatted")
+      return
+    }
+
+    implementation.onUserLogin(properties: properties)
     call.resolve()
   }
 
@@ -101,13 +114,13 @@ public class CleverTapPlugin: CAPPlugin, CAPBridgedPlugin {
     call.resolve()
   }
 
-  @objc func setPushToken(_ call: CAPPluginCall) {
+  @objc func setPushTokenAs(_ call: CAPPluginCall) {
     guard let token = call.getString("token") else {
       call.reject("Push token missing or malformatted")
       return
     }
 
-    implementation.setPushToken(token: token)
+    implementation.setPushTokenAs(token: token)
     call.resolve()
   }
 
