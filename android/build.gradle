@@ -3,6 +3,7 @@ ext {
     androidxAppCompatVersion = project.hasProperty('androidxAppCompatVersion') ? rootProject.ext.androidxAppCompatVersion : '1.6.1'
     androidxJunitVersion = project.hasProperty('androidxJunitVersion') ? rootProject.ext.androidxJunitVersion : '1.1.5'
     androidxEspressoCoreVersion = project.hasProperty('androidxEspressoCoreVersion') ? rootProject.ext.androidxEspressoCoreVersion : '3.5.1'
+    firebaseMessagingVersion = project.hasProperty('firebaseMessagingVersion') ? rootProject.ext.firebaseMessagingVersion : '23.4.1'
 }
 
 buildscript {
@@ -57,5 +58,5 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     api "com.clevertap.android:clevertap-android-sdk:7.0.1"
     implementation "androidx.core:core:1.9.0"
-    implementation "com.google.firebase:firebase-messaging:23.0.6"
+    implementation "com.google.firebase:firebase-messaging:$firebaseMessagingVersion"
 }
