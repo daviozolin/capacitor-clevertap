@@ -13,7 +13,7 @@ npx cap sync
 
 <docgen-index>
 
-* [`getProfileID()`](#getprofileid)
+* [`profileGetID()`](#profilegetid)
 * [`recordEvent(...)`](#recordevent)
 * [`recordChargedEvent(...)`](#recordchargedevent)
 * [`profileIncrementValue(...)`](#profileincrementvalue)
@@ -27,10 +27,10 @@ npx cap sync
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### getProfileID()
+### profileGetID()
 
 ```typescript
-getProfileID() => Promise<{ id: string; }>
+profileGetID() => Promise<{ id: string; }>
 ```
 
 **Returns:** <code>Promise&lt;{ id: string; }&gt;</code>
@@ -54,12 +54,12 @@ recordEvent(props: { event: string; properties: any; }) => Promise<void>
 ### recordChargedEvent(...)
 
 ```typescript
-recordChargedEvent(props: { details: any; items: [any]; }) => Promise<void>
+recordChargedEvent(props: { details: any; items: any[]; }) => Promise<void>
 ```
 
 | Param       | Type                                         |
 | ----------- | -------------------------------------------- |
-| **`props`** | <code>{ details: any; items: [any]; }</code> |
+| **`props`** | <code>{ details: any; items: any[]; }</code> |
 
 --------------------
 

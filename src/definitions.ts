@@ -1,15 +1,9 @@
 export interface CleverTapPlugin {
-  getProfileID(): Promise<{ id: string }>;
+  profileGetID(): Promise<{ id: string }>;
 
-  recordEvent(props: {
-    event: string;
-    properties: any;
-  }): Promise<void>;
+  recordEvent(props: { event: string; properties: any }): Promise<void>;
 
-  recordChargedEvent(props: {
-    details: any;
-    items: [any];
-  }): Promise<void>;
+  recordChargedEvent(props: { details: any; items: any[] }): Promise<void>;
 
   profileIncrementValue(props: { key: string; value: number }): Promise<void>;
 
