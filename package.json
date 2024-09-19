@@ -1,6 +1,6 @@
 {
   "name": "capacitor-clevertap",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Implements CleverTap SDK",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

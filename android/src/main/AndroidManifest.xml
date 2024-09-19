@@ -1,8 +1,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application
-        android:label="@string/app_name"
-        android:icon="@drawable/ic_launcher"
-        android:name="com.clevertap.android.sdk.Application">
     <service
         android:name="com.clevertap.android.sdk.pushnotification.fcm.FcmMessageListenerService"
         android:exported="true">
