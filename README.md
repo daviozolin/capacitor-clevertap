@@ -1,6 +1,8 @@
 # capacitor-clevertap
 
-Implements CleverTapAnalytics SDK
+This plugin partially implements CleverTapAnalytics SDK. It's still under development and has many missing functions.
+
+Follow [`iOS`](https://developer.clevertap.com/docs/ios-quickstart-guide) and [`Android`](https://developer.clevertap.com/docs/android-quickstart-guide) initial setup instructions.
 
 ## Install
 
