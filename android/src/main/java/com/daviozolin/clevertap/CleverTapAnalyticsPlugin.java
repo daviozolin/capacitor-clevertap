@@ -1,24 +1,21 @@
 package com.daviozolin.clevertap;
 
-import androidx.annotation.NonNull;
 import android.location.Location;
-
+import androidx.annotation.NonNull;
 import com.clevertap.android.sdk.CleverTapAPI;
-import com.getcapacitor.JSObject;
 import com.getcapacitor.JSArray;
+import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 @CapacitorPlugin(name = "CleverTapAnalytics")
 public class CleverTapAnalyticsPlugin extends Plugin {
@@ -115,6 +112,16 @@ public class CleverTapAnalyticsPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void onUserLogin(PluginCall call) throws JSONException {
+        JSObject properties = call.getObject("profileProperties");
+        HashMap<String, Object> profile = jsObjectToHashMap(properties);
+
+        clevertap.onUserLogin(profile);
+
+        call.resolve();
+    }
+
+    @PluginMethod
     public void setLocation(PluginCall call) {
         Double lat = call.getDouble("lat");
         Double lng = call.getDouble("lng");
@@ -188,7 +195,7 @@ public class CleverTapAnalyticsPlugin extends Plugin {
 
             Iterator<String> keys = jsonObject.keys();
 
-            while(keys.hasNext()) {
+            while (keys.hasNext()) {
                 String key = keys.next();
                 map.put(key, jsonObject.get(key));
             }
