@@ -1,3 +1,5 @@
+import type { PluginListenerHandle, PermissionState } from '@capacitor/core';
+
 export interface CleverTapPlugin {
   profileGetID(): Promise<{ id: string }>;
 
@@ -14,4 +16,46 @@ export interface CleverTapPlugin {
   setPushTokenAs(props: { token: string }): Promise<void>;
 
   onUserLogin(props: { profileProperties: any }): Promise<void>;
+
+  stopGeofence(): Promise<void>;
+
+  initGeofence(): Promise<void>;
+
+  addListener(
+    eventName: 'geofenceInitializedListener',
+    listenerFunc: (event: { status: string }) => void,
+  ): Promise<PluginListenerHandle>;
+
+  addListener(
+    eventName: 'locationUpdateListener',
+    listenerFunc: (event: { lat: number; lng: number }) => void,
+  ): Promise<PluginListenerHandle>;
+
+  addListener(
+    eventName: 'geofenceEnteredListener',
+    listenerFunc: (event: GeofenceStatusChange) => void,
+  ): Promise<PluginListenerHandle>;
+
+  addListener(
+    eventName: 'geofenceExitedListener',
+    listenerFunc: (event: GeofenceStatusChange) => void,
+  ): Promise<PluginListenerHandle>;
+
+  checkPermissions(): Promise<{
+    location: PermissionState;
+    backgroundUpdate: PermissionState;
+  }>;
+
+  requestPermissions(): Promise<void>;
+}
+
+export interface GeofenceStatusChange {
+  id: number;
+  gcId: number;
+  gcName: string;
+  lat: number;
+  lng: number;
+  r: number;
+  triggered_lat: number;
+  triggered_lng: number;
 }

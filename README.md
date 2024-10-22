@@ -23,6 +23,16 @@ npx cap sync
 * [`setLocation(...)`](#setlocation)
 * [`setPushTokenAs(...)`](#setpushtokenas)
 * [`onUserLogin(...)`](#onuserlogin)
+* [`stopGeofence()`](#stopgeofence)
+* [`initGeofence()`](#initgeofence)
+* [`addListener('geofenceInitializedListener', ...)`](#addlistenergeofenceinitializedlistener-)
+* [`addListener('locationUpdateListener', ...)`](#addlistenerlocationupdatelistener-)
+* [`addListener('geofenceEnteredListener', ...)`](#addlistenergeofenceenteredlistener-)
+* [`addListener('geofenceExitedListener', ...)`](#addlistenergeofenceexitedlistener-)
+* [`checkPermissions()`](#checkpermissions)
+* [`requestPermissions()`](#requestpermissions)
+* [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
@@ -129,5 +139,139 @@ onUserLogin(props: { profileProperties: any; }) => Promise<void>
 | **`props`** | <code>{ profileProperties: any; }</code> |
 
 --------------------
+
+
+### stopGeofence()
+
+```typescript
+stopGeofence() => Promise<void>
+```
+
+--------------------
+
+
+### initGeofence()
+
+```typescript
+initGeofence() => Promise<void>
+```
+
+--------------------
+
+
+### addListener('geofenceInitializedListener', ...)
+
+```typescript
+addListener(eventName: 'geofenceInitializedListener', listenerFunc: (event: { status: string; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                 |
+| ------------------ | ---------------------------------------------------- |
+| **`eventName`**    | <code>'geofenceInitializedListener'</code>           |
+| **`listenerFunc`** | <code>(event: { status: string; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener('locationUpdateListener', ...)
+
+```typescript
+addListener(eventName: 'locationUpdateListener', listenerFunc: (event: { lat: number; lng: number; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                           |
+| ------------------ | -------------------------------------------------------------- |
+| **`eventName`**    | <code>'locationUpdateListener'</code>                          |
+| **`listenerFunc`** | <code>(event: { lat: number; lng: number; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener('geofenceEnteredListener', ...)
+
+```typescript
+addListener(eventName: 'geofenceEnteredListener', listenerFunc: (event: GeofenceStatusChange) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                      |
+| ------------------ | ----------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'geofenceEnteredListener'</code>                                                    |
+| **`listenerFunc`** | <code>(event: <a href="#geofencestatuschange">GeofenceStatusChange</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener('geofenceExitedListener', ...)
+
+```typescript
+addListener(eventName: 'geofenceExitedListener', listenerFunc: (event: GeofenceStatusChange) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                      |
+| ------------------ | ----------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'geofenceExitedListener'</code>                                                     |
+| **`listenerFunc`** | <code>(event: <a href="#geofencestatuschange">GeofenceStatusChange</a>) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### checkPermissions()
+
+```typescript
+checkPermissions() => Promise<{ location: PermissionState; backgroundUpdate: PermissionState; }>
+```
+
+**Returns:** <code>Promise&lt;{ location: <a href="#permissionstate">PermissionState</a>; backgroundUpdate: <a href="#permissionstate">PermissionState</a>; }&gt;</code>
+
+--------------------
+
+
+### requestPermissions()
+
+```typescript
+requestPermissions() => Promise<void>
+```
+
+--------------------
+
+
+### Interfaces
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
+#### GeofenceStatusChange
+
+| Prop                | Type                |
+| ------------------- | ------------------- |
+| **`id`**            | <code>number</code> |
+| **`gcId`**          | <code>number</code> |
+| **`gcName`**        | <code>string</code> |
+| **`lat`**           | <code>number</code> |
+| **`lng`**           | <code>number</code> |
+| **`r`**             | <code>number</code> |
+| **`triggered_lat`** | <code>number</code> |
+| **`triggered_lng`** | <code>number</code> |
+
+
+### Type Aliases
+
+
+#### PermissionState
+
+<code>'prompt' | 'prompt-with-rationale' | 'granted' | 'denied'</code>
 
 </docgen-api>
