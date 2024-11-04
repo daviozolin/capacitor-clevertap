@@ -1,7 +1,12 @@
+import CleverTapGeofence
 import CleverTapSDK
 import Foundation
 
 @objc public class CleverTapAnalytics: NSObject {
+  @objc func stopGeofence() {
+    CleverTapGeofence.monitor.stop()
+  }
+
   @objc public func profileGetID() -> String {
     guard let id = CleverTap.sharedInstance()?.profileGetID() as? String else {
       return "ERROR"
@@ -13,12 +18,8 @@ import Foundation
     if level == 2 || level == 3 {
       CleverTap.setDebugLevel(CleverTapLogLevel.debug.rawValue)
     } else {
-      CleverTap.setDebugLevel(level)
+      CleverTap.setDebugLevel(Int32(level))
     }
-  }
-
-  @objc func triggerLocation() {
-
   }
 
   @objc func recordEvent(event: String, properties: [String: Any]) {
