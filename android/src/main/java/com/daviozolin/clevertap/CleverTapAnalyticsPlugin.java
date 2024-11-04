@@ -2,11 +2,13 @@ package com.daviozolin.clevertap;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.Context;
 import android.location.Location;
 import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import android.util.Log;
 import com.clevertap.android.geofence.CTGeofenceAPI;
 import com.clevertap.android.geofence.CTGeofenceSettings;
 import com.clevertap.android.geofence.Logger;
@@ -41,8 +43,17 @@ public class CleverTapAnalyticsPlugin extends Plugin {
 
     @Override
     public void load() {
-        clevertap = CleverTapAPI.getDefaultInstance(getContext());
+        clevertap = CleverTapAPI.getDefaultInstance(getContext().getApplicationContext());
         super.load();
+    }
+
+    @PluginMethod
+    public void setLogLevel(PluginCall call) {
+        JSObject ret = new JSObject();
+        Integer level = call.getInt("level");
+
+        ret.put("status", "Log level set to " + level);
+        call.resolve(ret);
     }
 
     @PluginMethod
@@ -119,6 +130,19 @@ public class CleverTapAnalyticsPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void triggerLocation(PluginCall call) {
+        call.setKeepAlive(true);
+        try {
+            CTGeofenceAPI.getInstance(getContext().getApplicationContext()).triggerLocation();
+        } catch (IllegalStateException e) {
+            Log.d("CTGeofence", "exception " + e.getMessage());
+        }
+        JSObject ret = new JSObject();
+        ret.put("value", "New value from Android");
+        call.resolve(ret);
+    }
+
+    @PluginMethod
     public void profilePush(PluginCall call) throws JSONException {
         JSObject properties = call.getObject("profileProperties");
         HashMap<String, Object> profile = jsObjectToHashMap(properties);
@@ -170,26 +194,51 @@ public class CleverTapAnalyticsPlugin extends Plugin {
     @PluginMethod
     public void initGeofence(PluginCall call) {
         try {
+            call.setKeepAlive(true);
+            Log.d("CTGeofence", "Initializing Clevertap Geofence Plugin");
+            Log.d("CTGeofence", "Clevertap instance initiated with " + clevertap.toString());
+
             CTGeofenceSettings ctGeofenceSettings = new CTGeofenceSettings.Builder()
                 .enableBackgroundLocationUpdates(true)
                 .setLogLevel(Logger.VERBOSE)
-                .setLocationAccuracy(CTGeofenceSettings.ACCURACY_MEDIUM)
+                .setLocationAccuracy(CTGeofenceSettings.ACCURACY_HIGH)
                 .setLocationFetchMode(CTGeofenceSettings.FETCH_CURRENT_LOCATION_PERIODIC)
+                .setGeofenceMonitoringCount(50)
+                .setInterval(30 * 60 * 1000)
+                .setFastestInterval(30 * 60 * 1000)
                 .setSmallestDisplacement(200)
+                .setGeofenceNotificationResponsiveness(0)
                 .build();
 
-            geofence = CTGeofenceAPI.getInstance(getContext());
+            Context context = getContext().getApplicationContext();
+            geofence = CTGeofenceAPI.getInstance(context);
 
             geofence.init(ctGeofenceSettings, clevertap);
-            geofence.triggerLocation();
 
             geofence.setOnGeofenceApiInitializedListener(
                 new CTGeofenceAPI.OnGeofenceApiInitializedListener() {
                     @Override
                     public void OnGeofenceApiInitialized() {
+                        Log.d("CTGeofence", "initialized fence");
                         JSObject ret = new JSObject();
                         ret.put("status", "INITIALIZED");
                         notifyListeners("geofenceInitializedListener", ret);
+                    }
+                }
+            );
+
+            geofence.setCtGeofenceEventsListener(
+                new CTGeofenceEventsListener() {
+                    @Override
+                    public void onGeofenceEnteredEvent(JSONObject jsonObject) {
+                        Log.d("CTGeofence", "onGeofenceEnteredEvent triggered");
+                        notifyListeners("geofenceEnteredListener", JSONObjectToJSObject(jsonObject));
+                    }
+
+                    @Override
+                    public void onGeofenceExitedEvent(JSONObject jsonObject) {
+                        Log.d("CTGeofence", "onGeofenceExitedEvent triggered");
+                        notifyListeners("geofenceExitedListener", JSONObjectToJSObject(jsonObject));
                     }
                 }
             );
@@ -206,16 +255,15 @@ public class CleverTapAnalyticsPlugin extends Plugin {
                 }
             );
 
-            geofence.setCtGeofenceEventsListener(
-                new CTGeofenceEventsListener() {
+            geofence.setCtLocationUpdatesListener(
+                new CTLocationUpdatesListener() {
                     @Override
-                    public void onGeofenceEnteredEvent(JSONObject jsonObject) {
-                        notifyListeners("geofenceEnteredListener", JSONObjectToJSObject(jsonObject));
-                    }
-
-                    @Override
-                    public void onGeofenceExitedEvent(JSONObject jsonObject) {
-                        notifyListeners("geofenceExitedListener", JSONObjectToJSObject(jsonObject));
+                    public void onLocationUpdates(Location location) {
+                        JSObject ret = new JSObject();
+                        ret.put("lat", location.getLatitude());
+                        ret.put("lng", location.getLongitude());
+                        notifyListeners("locationUpdateListener", ret);
+                        Log.d("CTGeofence", "new location Lat: " + location.getLatitude() + " and Long: " + location.getLongitude());
                     }
                 }
             );

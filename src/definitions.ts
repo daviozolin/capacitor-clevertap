@@ -1,5 +1,7 @@
 import type { PluginListenerHandle, PermissionState } from '@capacitor/core';
 
+import type { DEBUG_LEVEL } from '.';
+
 export interface CleverTapPlugin {
   profileGetID(): Promise<{ id: string }>;
 
@@ -20,6 +22,10 @@ export interface CleverTapPlugin {
   stopGeofence(): Promise<void>;
 
   initGeofence(): Promise<void>;
+
+  triggerLocation(): Promise<void>;
+
+  setDebugLevel(props: { level: DEBUG_LEVEL }): Promise<void>;
 
   addListener(
     eventName: 'geofenceInitializedListener',

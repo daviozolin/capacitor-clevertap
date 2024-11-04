@@ -25,6 +25,8 @@ npx cap sync
 * [`onUserLogin(...)`](#onuserlogin)
 * [`stopGeofence()`](#stopgeofence)
 * [`initGeofence()`](#initgeofence)
+* [`triggerLocation()`](#triggerlocation)
+* [`setDebugLevel(...)`](#setdebuglevel)
 * [`addListener('geofenceInitializedListener', ...)`](#addlistenergeofenceinitializedlistener-)
 * [`addListener('locationUpdateListener', ...)`](#addlistenerlocationupdatelistener-)
 * [`addListener('geofenceEnteredListener', ...)`](#addlistenergeofenceenteredlistener-)
@@ -155,6 +157,28 @@ stopGeofence() => Promise<void>
 ```typescript
 initGeofence() => Promise<void>
 ```
+
+--------------------
+
+
+### triggerLocation()
+
+```typescript
+triggerLocation() => Promise<void>
+```
+
+--------------------
+
+
+### setDebugLevel(...)
+
+```typescript
+setDebugLevel(props: { level: number; }) => Promise<void>
+```
+
+| Param       | Type                            |
+| ----------- | ------------------------------- |
+| **`props`** | <code>{ level: number; }</code> |
 
 --------------------
 

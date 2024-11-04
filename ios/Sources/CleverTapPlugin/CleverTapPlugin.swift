@@ -7,6 +7,7 @@ public class CleverTapPlugin: CAPPlugin, CAPBridgedPlugin {
   public let identifier = "CleverTapPlugin"
   public let jsName = "CleverTapAnalytics"
   public let pluginMethods: [CAPPluginMethod] = [
+    CAPPluginMethod(name: "setDebugLevel", returnType: CAPPluginReturnPromise),
     CAPPluginMethod(name: "profileGetID", returnType: CAPPluginReturnPromise),
     CAPPluginMethod(name: "recordEvent", returnType: CAPPluginReturnPromise),
     CAPPluginMethod(
@@ -30,6 +31,19 @@ public class CleverTapPlugin: CAPPlugin, CAPBridgedPlugin {
     ])
   }
 
+  @objc func setDebugLevel(_ call: CAPPluginCall) {
+    guard let level = call.getInt("level") else {
+      call.reject("Debug level missing or malformatted")
+      return
+    }
+
+    implementation.setDebugLevel(level: level)
+
+    call.resolve([
+      "status": "Log level set to \(level)"
+    ])
+  }
+
   @objc func recordEvent(_ call: CAPPluginCall) {
     guard let event = call.getString("event") else {
       call.reject("Event name missing or malformatted")
@@ -46,7 +60,6 @@ public class CleverTapPlugin: CAPPlugin, CAPBridgedPlugin {
   }
 
   @objc func recordChargedEvent(_ call: CAPPluginCall) {
-
     guard let details = call.getObject("details") else {
       call.reject("Purchese details missing or malformatted")
       return
@@ -77,7 +90,6 @@ public class CleverTapPlugin: CAPPlugin, CAPBridgedPlugin {
   }
 
   @objc func profilePush(_ call: CAPPluginCall) {
-
     guard let properties = call.getObject("profileProperties") else {
       call.reject("Profile properties details missing or malformatted")
       return
@@ -88,7 +100,6 @@ public class CleverTapPlugin: CAPPlugin, CAPBridgedPlugin {
   }
 
   @objc func onUserLogin(_ call: CAPPluginCall) {
-
     guard let properties = call.getObject("profileProperties") else {
       call.reject("Profile properties details missing or malformatted")
       return

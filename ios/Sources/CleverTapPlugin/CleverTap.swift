@@ -9,6 +9,18 @@ import Foundation
     return id
   }
 
+  @objc func setDebugLevel(level: Int) {
+    if level == 2 || level == 3 {
+      CleverTap.setDebugLevel(CleverTapLogLevel.debug.rawValue)
+    } else {
+      CleverTap.setDebugLevel(level)
+    }
+  }
+
+  @objc func triggerLocation() {
+
+  }
+
   @objc func recordEvent(event: String, properties: [String: Any]) {
     CleverTap.sharedInstance()?.recordEvent(event, withProps: properties)
   }
