@@ -38,6 +38,11 @@ export interface CleverTapPlugin {
   ): Promise<PluginListenerHandle>;
 
   addListener(
+    eventName: 'onPushClicked',
+    listenerFunc: (data: CleverTapPushNotificationPayload) => void,
+  ): Promise<PluginListenerHandle>;
+
+  addListener(
     eventName: 'geofenceEnteredListener',
     listenerFunc: (event: GeofenceStatusChange) => void,
   ): Promise<PluginListenerHandle>;
@@ -64,4 +69,11 @@ export interface GeofenceStatusChange {
   r: number;
   triggered_lat: number;
   triggered_lng: number;
+}
+
+export interface CleverTapPushNotificationPayload {
+  title: string;
+  body: string;
+  data: any;
+  image: string;
 }

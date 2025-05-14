@@ -1,6 +1,7 @@
 package com.daviozolin.clevertap;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.Context;
 import android.location.Location;
@@ -8,12 +9,14 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import android.app.NotificationManager;
 import android.util.Log;
 import com.clevertap.android.geofence.CTGeofenceAPI;
 import com.clevertap.android.geofence.CTGeofenceSettings;
 import com.clevertap.android.geofence.Logger;
 import com.clevertap.android.geofence.interfaces.CTGeofenceEventsListener;
 import com.clevertap.android.geofence.interfaces.CTLocationUpdatesListener;
+import com.clevertap.android.sdk.pushnotification.CTPushNotificationListener;
 import com.clevertap.android.sdk.CleverTapAPI;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -36,15 +39,38 @@ import org.json.JSONObject;
         @Permission(strings = { Manifest.permission.ACCESS_BACKGROUND_LOCATION }, alias = "backgroundUpdate")
     }
 )
-public class CleverTapAnalyticsPlugin extends Plugin {
+public class CleverTapAnalyticsPlugin extends Plugin implements CTPushNotificationListener {
 
     CleverTapAPI clevertap;
     CTGeofenceAPI geofence;
 
     @Override
     public void load() {
-        clevertap = CleverTapAPI.getDefaultInstance(getContext().getApplicationContext());
         super.load();
+        CleverTapAPI.setDebugLevel(CleverTapAPI.LogLevel.VERBOSE);
+        clevertap = CleverTapAPI.getDefaultInstance(getContext().getApplicationContext());
+        if (clevertap != null) {
+            clevertap.setCTPushNotificationListener(this);
+        }
+    }
+
+    @Override
+    protected void handleOnNewIntent(Intent intent) {
+        super.handleOnNewIntent(intent);
+        Log.d("CleverTapCustomPlugin", "handleOnNewIntent called");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            clevertap.pushNotificationClickedEvent(intent.getExtras());
+        }
+    }
+
+    @Override
+    public void onNotificationClickedPayloadReceived(HashMap<String, Object> hashMap) {
+        JSObject data = toJSObject(hashMap);
+        data.put("image", data.get('wzrk_bpds'));
+        data.put("body", data.get('nm'));
+        data.put("title", data.get('nt'));
+        data.put("data", location.getLongitude());
+        notifyListeners("onPushClicked", data);
     }
 
     @PluginMethod
@@ -77,7 +103,6 @@ public class CleverTapAnalyticsPlugin extends Plugin {
             call.reject("Properties missing or malformatted");
             return;
         }
-
         clevertap.pushEvent(event, jsObjectToMap(props));
 
         call.resolve();
@@ -343,5 +368,32 @@ public class CleverTapAnalyticsPlugin extends Plugin {
         }
 
         return arrayList;
+    }
+
+    public static JSObject toJSObject(HashMap<String, Object> map) {
+        JSObject jsObject = new JSObject();
+
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if (value instanceof String) {
+                jsObject.put(key, (String) value);
+            } else if (value instanceof Integer) {
+                jsObject.put(key, (Integer) value);
+            } else if (value instanceof Double) {
+                jsObject.put(key, (Double) value);
+            } else if (value instanceof Boolean) {
+                jsObject.put(key, (Boolean) value);
+            } else if (value instanceof Float) {
+                jsObject.put(key, ((Float) value).doubleValue());
+            } else if (value instanceof Long) {
+                jsObject.put(key, ((Long) value).doubleValue());
+            } else {
+                jsObject.put(key, value != null ? value.toString() : null);
+            }
+        }
+
+        return jsObject;
     }
 }

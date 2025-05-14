@@ -29,12 +29,14 @@ npx cap sync
 * [`setDebugLevel(...)`](#setdebuglevel)
 * [`addListener('geofenceInitializedListener', ...)`](#addlistenergeofenceinitializedlistener-)
 * [`addListener('locationUpdateListener', ...)`](#addlistenerlocationupdatelistener-)
+* [`addListener('onPushClicked', ...)`](#addlisteneronpushclicked-)
 * [`addListener('geofenceEnteredListener', ...)`](#addlistenergeofenceenteredlistener-)
 * [`addListener('geofenceExitedListener', ...)`](#addlistenergeofenceexitedlistener-)
 * [`checkPermissions()`](#checkpermissions)
 * [`requestPermissions()`](#requestpermissions)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
+* [Enums](#enums)
 
 </docgen-index>
 
@@ -173,12 +175,12 @@ triggerLocation() => Promise<void>
 ### setDebugLevel(...)
 
 ```typescript
-setDebugLevel(props: { level: number; }) => Promise<void>
+setDebugLevel(props: { level: DEBUG_LEVEL; }) => Promise<void>
 ```
 
-| Param       | Type                            |
-| ----------- | ------------------------------- |
-| **`props`** | <code>{ level: number; }</code> |
+| Param       | Type                                                            |
+| ----------- | --------------------------------------------------------------- |
+| **`props`** | <code>{ level: <a href="#debug_level">DEBUG_LEVEL</a>; }</code> |
 
 --------------------
 
@@ -209,6 +211,22 @@ addListener(eventName: 'locationUpdateListener', listenerFunc: (event: { lat: nu
 | ------------------ | -------------------------------------------------------------- |
 | **`eventName`**    | <code>'locationUpdateListener'</code>                          |
 | **`listenerFunc`** | <code>(event: { lat: number; lng: number; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener('onPushClicked', ...)
+
+```typescript
+addListener(eventName: 'onPushClicked', listenerFunc: (data: CleverTapPushNotificationPayload) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                                             |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'onPushClicked'</code>                                                                                     |
+| **`listenerFunc`** | <code>(data: <a href="#clevertappushnotificationpayload">CleverTapPushNotificationPayload</a>) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
@@ -277,6 +295,16 @@ requestPermissions() => Promise<void>
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
 
+#### CleverTapPushNotificationPayload
+
+| Prop        | Type                |
+| ----------- | ------------------- |
+| **`title`** | <code>string</code> |
+| **`body`**  | <code>string</code> |
+| **`data`**  | <code>any</code>    |
+| **`image`** | <code>string</code> |
+
+
 #### GeofenceStatusChange
 
 | Prop                | Type                |
@@ -297,5 +325,18 @@ requestPermissions() => Promise<void>
 #### PermissionState
 
 <code>'prompt' | 'prompt-with-rationale' | 'granted' | 'denied'</code>
+
+
+### Enums
+
+
+#### DEBUG_LEVEL
+
+| Members       | Value           |
+| ------------- | --------------- |
+| **`OFF`**     | <code>-1</code> |
+| **`INFO`**    | <code>0</code>  |
+| **`DEBUG`**   | <code>2</code>  |
+| **`VERBOSE`** | <code>3</code>  |
 
 </docgen-api>
