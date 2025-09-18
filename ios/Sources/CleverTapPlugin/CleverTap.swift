@@ -49,5 +49,7 @@ import Foundation
   @objc func setPushTokenAs(token: String) {
     CleverTap.sharedInstance()?.setPushTokenAs(token)
   }
+    
+    
 
 }
