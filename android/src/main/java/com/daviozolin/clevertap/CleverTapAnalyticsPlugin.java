@@ -32,13 +32,11 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@CapacitorPlugin(
-    name = "CleverTapAnalytics",
-    permissions = {
-        @Permission(strings = { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, alias = "location"),
+@CapacitorPlugin(name = "CleverTapAnalytics", permissions = {
+        @Permission(strings = { Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION }, alias = "location"),
         @Permission(strings = { Manifest.permission.ACCESS_BACKGROUND_LOCATION }, alias = "backgroundUpdate")
-    }
-)
+})
 public class CleverTapAnalyticsPlugin extends Plugin implements CTPushNotificationListener {
 
     CleverTapAPI clevertap;
@@ -58,19 +56,41 @@ public class CleverTapAnalyticsPlugin extends Plugin implements CTPushNotificati
     protected void handleOnNewIntent(Intent intent) {
         super.handleOnNewIntent(intent);
         Log.d("CleverTapCustomPlugin", "handleOnNewIntent called");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             clevertap.pushNotificationClickedEvent(intent.getExtras());
         }
     }
 
     @Override
     public void onNotificationClickedPayloadReceived(HashMap<String, Object> hashMap) {
-        JSObject data = toJSObject(hashMap);
-        data.put("image", data.get('wzrk_bpds'));
-        data.put("body", data.get('nm'));
-        data.put("title", data.get('nt'));
-        data.put("data", location.getLongitude());
-        notifyListeners("onPushClicked", data);
+        JSObject data = new JSObject();
+
+        try {
+            data = toJSObject(hashMap);
+        } catch (Exception e) {
+            // fallback to empty object if conversion fails
+            data = new JSObject();
+        }
+
+        try {
+            data.put("image", data.get("wzrk_bpds"));
+        } catch (Exception ignored) {
+        }
+
+        try {
+            data.put("body", data.get("nm"));
+        } catch (Exception ignored) {
+        }
+
+        try {
+            data.put("title", data.get("nt"));
+        } catch (Exception ignored) {
+        }
+
+        try {
+            notifyListeners("onPushClicked", data);
+        } catch (Exception ignored) {
+        }
     }
 
     @PluginMethod
@@ -224,16 +244,16 @@ public class CleverTapAnalyticsPlugin extends Plugin implements CTPushNotificati
             Log.d("CTGeofence", "Clevertap instance initiated with " + clevertap.toString());
 
             CTGeofenceSettings ctGeofenceSettings = new CTGeofenceSettings.Builder()
-                .enableBackgroundLocationUpdates(true)
-                .setLogLevel(Logger.VERBOSE)
-                .setLocationAccuracy(CTGeofenceSettings.ACCURACY_HIGH)
-                .setLocationFetchMode(CTGeofenceSettings.FETCH_CURRENT_LOCATION_PERIODIC)
-                .setGeofenceMonitoringCount(50)
-                .setInterval(30 * 60 * 1000)
-                .setFastestInterval(30 * 60 * 1000)
-                .setSmallestDisplacement(200)
-                .setGeofenceNotificationResponsiveness(0)
-                .build();
+                    .enableBackgroundLocationUpdates(true)
+                    .setLogLevel(Logger.VERBOSE)
+                    .setLocationAccuracy(CTGeofenceSettings.ACCURACY_HIGH)
+                    .setLocationFetchMode(CTGeofenceSettings.FETCH_CURRENT_LOCATION_PERIODIC)
+                    .setGeofenceMonitoringCount(50)
+                    .setInterval(30 * 60 * 1000)
+                    .setFastestInterval(30 * 60 * 1000)
+                    .setSmallestDisplacement(200)
+                    .setGeofenceNotificationResponsiveness(0)
+                    .build();
 
             Context context = getContext().getApplicationContext();
             geofence = CTGeofenceAPI.getInstance(context);
@@ -241,57 +261,54 @@ public class CleverTapAnalyticsPlugin extends Plugin implements CTPushNotificati
             geofence.init(ctGeofenceSettings, clevertap);
 
             geofence.setOnGeofenceApiInitializedListener(
-                new CTGeofenceAPI.OnGeofenceApiInitializedListener() {
-                    @Override
-                    public void OnGeofenceApiInitialized() {
-                        Log.d("CTGeofence", "initialized fence");
-                        JSObject ret = new JSObject();
-                        ret.put("status", "INITIALIZED");
-                        notifyListeners("geofenceInitializedListener", ret);
-                    }
-                }
-            );
+                    new CTGeofenceAPI.OnGeofenceApiInitializedListener() {
+                        @Override
+                        public void OnGeofenceApiInitialized() {
+                            Log.d("CTGeofence", "initialized fence");
+                            JSObject ret = new JSObject();
+                            ret.put("status", "INITIALIZED");
+                            notifyListeners("geofenceInitializedListener", ret);
+                        }
+                    });
 
             geofence.setCtGeofenceEventsListener(
-                new CTGeofenceEventsListener() {
-                    @Override
-                    public void onGeofenceEnteredEvent(JSONObject jsonObject) {
-                        Log.d("CTGeofence", "onGeofenceEnteredEvent triggered");
-                        notifyListeners("geofenceEnteredListener", JSONObjectToJSObject(jsonObject));
-                    }
+                    new CTGeofenceEventsListener() {
+                        @Override
+                        public void onGeofenceEnteredEvent(JSONObject jsonObject) {
+                            Log.d("CTGeofence", "onGeofenceEnteredEvent triggered");
+                            notifyListeners("geofenceEnteredListener", JSONObjectToJSObject(jsonObject));
+                        }
 
-                    @Override
-                    public void onGeofenceExitedEvent(JSONObject jsonObject) {
-                        Log.d("CTGeofence", "onGeofenceExitedEvent triggered");
-                        notifyListeners("geofenceExitedListener", JSONObjectToJSObject(jsonObject));
-                    }
-                }
-            );
-
-            geofence.setCtLocationUpdatesListener(
-                new CTLocationUpdatesListener() {
-                    @Override
-                    public void onLocationUpdates(Location location) {
-                        JSObject ret = new JSObject();
-                        ret.put("lat", location.getLatitude());
-                        ret.put("lng", location.getLongitude());
-                        notifyListeners("locationUpdateListener", ret);
-                    }
-                }
-            );
+                        @Override
+                        public void onGeofenceExitedEvent(JSONObject jsonObject) {
+                            Log.d("CTGeofence", "onGeofenceExitedEvent triggered");
+                            notifyListeners("geofenceExitedListener", JSONObjectToJSObject(jsonObject));
+                        }
+                    });
 
             geofence.setCtLocationUpdatesListener(
-                new CTLocationUpdatesListener() {
-                    @Override
-                    public void onLocationUpdates(Location location) {
-                        JSObject ret = new JSObject();
-                        ret.put("lat", location.getLatitude());
-                        ret.put("lng", location.getLongitude());
-                        notifyListeners("locationUpdateListener", ret);
-                        Log.d("CTGeofence", "new location Lat: " + location.getLatitude() + " and Long: " + location.getLongitude());
-                    }
-                }
-            );
+                    new CTLocationUpdatesListener() {
+                        @Override
+                        public void onLocationUpdates(Location location) {
+                            JSObject ret = new JSObject();
+                            ret.put("lat", location.getLatitude());
+                            ret.put("lng", location.getLongitude());
+                            notifyListeners("locationUpdateListener", ret);
+                        }
+                    });
+
+            geofence.setCtLocationUpdatesListener(
+                    new CTLocationUpdatesListener() {
+                        @Override
+                        public void onLocationUpdates(Location location) {
+                            JSObject ret = new JSObject();
+                            ret.put("lat", location.getLatitude());
+                            ret.put("lng", location.getLongitude());
+                            notifyListeners("locationUpdateListener", ret);
+                            Log.d("CTGeofence", "new location Lat: " + location.getLatitude() + " and Long: "
+                                    + location.getLongitude());
+                        }
+                    });
 
             call.resolve();
         } catch (IllegalStateException e) {

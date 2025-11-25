@@ -58,7 +58,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation "androidx.core:core:1.9.0"
     implementation "com.google.firebase:firebase-messaging:$firebaseMessagingVersion"
-    api "com.clevertap.android:clevertap-android-sdk:7.0.1"
+    api "com.clevertap.android:clevertap-android-sdk:7.7.0"
     implementation 'com.clevertap.android:clevertap-geofence-sdk:1.3.0'
     implementation 'com.google.android.gms:play-services-location:21.0.0'
     implementation 'androidx.work:work-runtime:2.7.1'
