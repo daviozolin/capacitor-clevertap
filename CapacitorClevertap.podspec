@@ -13,8 +13,8 @@ Pod::Spec.new do |s|
   s.source_files = 'ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}'
   s.ios.deployment_target = '14.0'
   s.dependency 'Capacitor'
-  s.dependency 'CleverTap-iOS-SDK'
-  s.dependency 'CleverTap-Geofence-SDK'
-  s.dependency 'CTNotificationService'
+  s.dependency 'CleverTap-iOS-SDK', '~> 7.8', '>= 7.8.2'
+  s.dependency 'CleverTap-Geofence-SDK', '~> 1.0', '>= 1.0.7'
+  s.dependency 'CTNotificationService', '~> 0.1', '>= 0.1.7'
   s.swift_version = '5.1'
 end

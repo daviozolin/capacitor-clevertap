@@ -33,7 +33,7 @@ npx cap sync
 * [`addListener('geofenceEnteredListener', ...)`](#addlistenergeofenceenteredlistener-)
 * [`addListener('geofenceExitedListener', ...)`](#addlistenergeofenceexitedlistener-)
 * [`checkPermissions()`](#checkpermissions)
-* [`requestPermissions()`](#requestpermissions)
+* [`requestPermissions(...)`](#requestpermissions)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -125,6 +125,17 @@ setLocation(props: { lat: number; lng: number; }) => Promise<void>
 setPushTokenAs(props: { token: string; }) => Promise<void>
 ```
 
+Registers the device's push token with CleverTap.
+
+Pass the FCM registration token on Android and the APNs device token
+(hex string) on iOS, e.g. the value from `@capacitor/push-notifications`'
+`registration` event on each platform.
+
+Android: this only registers the token. If another FirebaseMessagingService
+(e.g. `@capacitor/push-notifications`') receives `MESSAGING_EVENT` instead of
+CleverTap's, CleverTap pushes reach that service, and it has to hand them to
+CleverTap natively (`CTFcmMessageHandler`) for them to be shown.
+
 | Param       | Type                            |
 | ----------- | ------------------------------- |
 | **`props`** | <code>{ token: string; }</code> |
@@ -151,6 +162,8 @@ onUserLogin(props: { profileProperties: any; }) => Promise<void>
 stopGeofence() => Promise<void>
 ```
 
+Stops geofence monitoring.
+
 --------------------
 
 
@@ -159,6 +172,12 @@ stopGeofence() => Promise<void>
 ```typescript
 initGeofence() => Promise<void>
 ```
+
+Android: initializes the CleverTap Geofence SDK and starts monitoring.
+Location permission must already be granted.
+
+iOS: only subscribes the geofence listeners. Monitoring itself is started
+natively with `CleverTapGeofence.monitor.start(didFinishLaunchingWithOptions:)`.
 
 --------------------
 
@@ -169,6 +188,12 @@ initGeofence() => Promise<void>
 triggerLocation() => Promise<void>
 ```
 
+Fetches the current location and sends it to CleverTap to refresh the
+monitored geofences. Rejects if `initGeofence()` hasn't been called or the
+`location` permission isn't granted.
+
+Android only: the iOS Geofence SDK has no equivalent.
+
 --------------------
 
 
@@ -177,6 +202,10 @@ triggerLocation() => Promise<void>
 ```typescript
 setDebugLevel(props: { level: DEBUG_LEVEL; }) => Promise<void>
 ```
+
+Sets the CleverTap SDK log level. Until this is called, the SDK's default applies.
+
+iOS has a single debug level, so `DEBUG` and `VERBOSE` behave the same there.
 
 | Param       | Type                                                            |
 | ----------- | --------------------------------------------------------------- |
@@ -190,6 +219,8 @@ setDebugLevel(props: { level: DEBUG_LEVEL; }) => Promise<void>
 ```typescript
 addListener(eventName: 'geofenceInitializedListener', listenerFunc: (event: { status: string; }) => void) => Promise<PluginListenerHandle>
 ```
+
+Android only.
 
 | Param              | Type                                                 |
 | ------------------ | ---------------------------------------------------- |
@@ -207,6 +238,11 @@ addListener(eventName: 'geofenceInitializedListener', listenerFunc: (event: { st
 addListener(eventName: 'locationUpdateListener', listenerFunc: (event: { lat: number; lng: number; }) => void) => Promise<PluginListenerHandle>
 ```
 
+Android: fired on each location update with `{ lat, lng }`.
+
+iOS: fired when the list of monitored geofences is updated, with the
+Geofence SDK's notification payload instead of `{ lat, lng }`.
+
 | Param              | Type                                                           |
 | ------------------ | -------------------------------------------------------------- |
 | **`eventName`**    | <code>'locationUpdateListener'</code>                          |
@@ -222,6 +258,11 @@ addListener(eventName: 'locationUpdateListener', listenerFunc: (event: { lat: nu
 ```typescript
 addListener(eventName: 'onPushClicked', listenerFunc: (data: CleverTapPushNotificationPayload) => void) => Promise<PluginListenerHandle>
 ```
+
+Fired when a CleverTap push notification is tapped. Taps that launch the
+app are delivered once the first listener is added.
+
+Android only.
 
 | Param              | Type                                                                                                             |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------- |
@@ -268,19 +309,30 @@ addListener(eventName: 'geofenceExitedListener', listenerFunc: (event: GeofenceS
 ### checkPermissions()
 
 ```typescript
-checkPermissions() => Promise<{ location: PermissionState; backgroundUpdate: PermissionState; }>
+checkPermissions() => Promise<PermissionStatus>
 ```
 
-**Returns:** <code>Promise&lt;{ location: <a href="#permissionstate">PermissionState</a>; backgroundUpdate: <a href="#permissionstate">PermissionState</a>; }&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
 
 --------------------
 
 
-### requestPermissions()
+### requestPermissions(...)
 
 ```typescript
-requestPermissions() => Promise<void>
+requestPermissions(options?: CleverTapPluginPermissions | undefined) => Promise<PermissionStatus>
 ```
+
+On Android 11+ the system ignores a request that asks for background
+location together with foreground location, so request `location` first
+and `backgroundUpdate` in a second call. iOS ignores `permissions` and
+always requests "Always" authorization.
+
+| Param         | Type                                                                              |
+| ------------- | --------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#clevertappluginpermissions">CleverTapPluginPermissions</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
 
 --------------------
 
@@ -319,12 +371,32 @@ requestPermissions() => Promise<void>
 | **`triggered_lng`** | <code>number</code> |
 
 
+#### PermissionStatus
+
+| Prop                   | Type                                                        |
+| ---------------------- | ----------------------------------------------------------- |
+| **`location`**         | <code><a href="#permissionstate">PermissionState</a></code> |
+| **`backgroundUpdate`** | <code><a href="#permissionstate">PermissionState</a></code> |
+
+
+#### CleverTapPluginPermissions
+
+| Prop              | Type                                   |
+| ----------------- | -------------------------------------- |
+| **`permissions`** | <code>CleverTapPermissionType[]</code> |
+
+
 ### Type Aliases
 
 
 #### PermissionState
 
 <code>'prompt' | 'prompt-with-rationale' | 'granted' | 'denied'</code>
+
+
+#### CleverTapPermissionType
+
+<code>'location' | 'backgroundUpdate'</code>
 
 
 ### Enums
